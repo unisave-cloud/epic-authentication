@@ -2,6 +2,10 @@
 # My Custom gitignore rules #
 #############################
 
+# Epic Online Services SDK
+[Aa]ssets/Plugins/EOSSDK
+[Aa]ssets/Plugins/EOSSDK.meta
+
 # Unisave asset
 [Aa]ssets/Plugins/Unisave
 [Aa]ssets/Plugins/Unisave.meta

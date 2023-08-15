@@ -1,7 +1,8 @@
 using System;
+using Epic.OnlineServices.Auth;
+using Epic.OnlineServices.Platform;
 using UnityEngine;
 using Unisave.Facets;
-using Object = System.Object;
 
 namespace Unisave.EpicAuthentication
 {
@@ -10,6 +11,11 @@ namespace Unisave.EpicAuthentication
     /// </summary>
     public static class MonoBehaviourExtensions
     {
-        // ...
+        public static void LoginViaEpic(PlatformInterface platform)
+        {
+            AuthInterface auth = platform.GetAuthInterface();
+            
+            // do interesting stuff here
+        }
     }
 }

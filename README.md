@@ -23,5 +23,5 @@ Setting up development
 - Clone this repository
 - Open in Unity, check Unity version in [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt)
 - Import the [Unisave asset](https://assetstore.unity.com/packages/slug/142705) from the asset store
-- **TODO: install the Epic SDK**
+- **TODO: install the [Epic Online Services SDK](https://dev.epicgames.com/en-US/sdk)**
 - Set up Unisave cloud connection so that the examples can be compiled and executed
