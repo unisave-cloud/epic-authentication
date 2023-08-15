@@ -11,7 +11,10 @@ namespace Unisave.EpicAuthentication
     /// </summary>
     public static class MonoBehaviourExtensions
     {
-        public static void LoginViaEpic(PlatformInterface platform)
+        public static void LoginViaEpic(
+            this MonoBehaviour caller,
+            PlatformInterface platform
+        )
         {
             AuthInterface auth = platform.GetAuthInterface();
             
