@@ -222,7 +222,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1230049416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,16 +278,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd6f2546454a485e837392a84230d5d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  productName: MyUnityApplication
+  productName: Unisave Integration Testing
   productVersion: 1.0
-  productId: 
-  sandboxId: 
-  deploymentId: 
-  clientId: 
-  clientSecret: 
-  loginCredentialType: 6
-  loginCredentialId: 
-  loginCredentialToken: 
+  productId: 74bea1635ff148ae96679a71c97d95d3
+  sandboxId: 0eb54cb2a4fc4b30affc88f2d549133b
+  deploymentId: 78bcdd76bca84c83a0961abc634d7105
+  clientId: xyza7891sCBQVqNMWdQ6312PGP3lzjOk
+  clientSecret: z1zZErQEjy4+ujGW9Kq2GJtuFLLpErNApgLi8MhZXDY
+  loginCredentialType: 4
+  loginCredentialId: localhost:1234
+  loginCredentialToken: MyCredential
 --- !u!4 &1893925618
 Transform:
   m_ObjectHideFlags: 0

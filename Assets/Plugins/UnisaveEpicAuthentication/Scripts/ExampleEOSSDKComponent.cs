@@ -72,7 +72,7 @@ namespace Unisave.EpicAuthentication
                 PlatformInterface.Shutdown();
             }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (libraryPointer != IntPtr.Zero)
             {
                 Bindings.Unhook();
@@ -81,7 +81,7 @@ namespace Unisave.EpicAuthentication
                 while (FreeLibrary(libraryPointer) != 0) { }
                 libraryPointer = IntPtr.Zero;
             }
-    #endif
+#endif
         }
 
         void Start()
@@ -130,7 +130,7 @@ namespace Unisave.EpicAuthentication
                     Token = loginCredentialToken
                 },
                 // Change these scopes to match the ones set up on your product on the Developer Portal.
-                ScopeFlags = AuthScopeFlags.BasicProfile | AuthScopeFlags.FriendsList | AuthScopeFlags.Presence
+                ScopeFlags = AuthScopeFlags.BasicProfile | AuthScopeFlags.FriendsList | AuthScopeFlags.Presence | AuthScopeFlags.Country
             };
 
             // Ensure platform tick is called on an interval, or this will not callback.
@@ -139,10 +139,11 @@ namespace Unisave.EpicAuthentication
                 if (loginCallbackInfo.ResultCode == Result.Success)
                 {
                     Debug.Log("Login succeeded");
+                    Debug.LogWarning("ACCOUNT ID " + loginCallbackInfo.LocalUserId);
                 }
                 else if (Common.IsOperationComplete(loginCallbackInfo.ResultCode))
                 {
-                    Debug.Log("Login failed: " + loginCallbackInfo.ResultCode);
+                    Debug.LogError("Login failed: " + loginCallbackInfo.ResultCode);
                 }
             });
         }
