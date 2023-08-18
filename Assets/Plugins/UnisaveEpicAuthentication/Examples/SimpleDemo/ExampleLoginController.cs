@@ -4,14 +4,15 @@ using Epic.OnlineServices.Platform;
 using Unisave.EpicAuthentication;
 using UnityEngine;
 
-namespace Plugins.UnisaveEpicAuthentication.Examples.SimpleDemo
+namespace Unisave.EpicAuthentication.Examples.SimpleDemo
 {
     public class ExampleLoginController : MonoBehaviour
     {
         void OnEnable()
         {
             // DEBUG
-            Invoke(nameof(OnLoginClick), 1.0f);
+            // Invoke(nameof(OnLoginClick), 1.0f);
+            OnLoginClick();
         }
         
         void OnLoginClick()

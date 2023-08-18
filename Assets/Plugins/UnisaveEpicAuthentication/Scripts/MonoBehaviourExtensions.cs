@@ -2,6 +2,7 @@ using System;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Auth;
 using Epic.OnlineServices.Platform;
+using Unisave.EpicAuthentication.Backend;
 using UnityEngine;
 using Unisave.Facets;
 
@@ -21,7 +22,7 @@ namespace Unisave.EpicAuthentication
         /// <param name="epicAccountId">
         /// What logged-in account to use. If null, the first and only one will be used.
         /// </param>
-        public static void LoginUnisaveViaEpic(
+        public static UnisaveOperation LoginUnisaveViaEpic(
             this MonoBehaviour caller,
             PlatformInterface platform,
             EpicAccountId epicAccountId = null
@@ -59,12 +60,15 @@ namespace Unisave.EpicAuthentication
             if (result != Result.Success || idToken == null)
                 throw new Exception("Copying ID token failed: " + result);
 
-            string jwt = idToken.Value.JsonWebToken.ToString();
+            string authJwt = idToken.Value.JsonWebToken.ToString();
+            
+            // TODO: get the Connect interface JWT as well
             
             // === send the JWT to unisave for validation and the login ===
-            
-            Debug.Log("JWT: " + jwt);
-            Debug.Log("ACCOUNT ID: " + epicAccountId);
+
+            return caller.CallFacet(
+                (EpicAuthFacet f) => f.LoginOrRegister(authJwt, null)
+            );
         }
     }
 }
