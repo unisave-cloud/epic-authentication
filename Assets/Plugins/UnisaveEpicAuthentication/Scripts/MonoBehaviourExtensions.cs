@@ -22,7 +22,7 @@ namespace Unisave.EpicAuthentication
         /// <param name="epicAccountId">
         /// What logged-in account to use. If null, the first and only one will be used.
         /// </param>
-        public static UnisaveOperation LoginUnisaveViaEpic(
+        public static UnisaveOperation<EpicLoginResponse> LoginUnisaveViaEpic(
             this MonoBehaviour caller,
             PlatformInterface platform,
             EpicAccountId epicAccountId = null

@@ -22,7 +22,7 @@ namespace Unisave.EpicAuthentication.Backend
         /// <param name="connectJwt">
         /// JWT from the Connect interface, may be null
         /// </param>
-        public void LoginOrRegister(string authJwt, string connectJwt)
+        public EpicLoginResponse LoginOrRegister(string authJwt, string connectJwt)
         {
             // resolve the bootstrapper (a cheap config instance)
             var bootstrapper = EpicAuthBootstrapperBase.Resolve();
@@ -59,8 +59,16 @@ namespace Unisave.EpicAuthentication.Backend
             // Auth.Login(documentId); // TODO: extend the Auth API
             Session.Set(AuthenticationManager.SessionKey, documentId); // hack workaround
             
-            // TODO: trigger "AfterLogin" callback
-            // (the user code can do Auth.GetPlayer... and e.g. modify lastLoginAt = now)
+            // fire the after-login callback
+            bootstrapper.PlayerHasLoggedIn(
+                documentId: documentId,
+                epicAccountId: epicAccountId,
+                epicProductUserId: epicProductUserId
+            );
+
+            return new EpicLoginResponse {
+                PlayerId = documentId
+            };
         }
 
         private void ValidateJwt(string jwt)
