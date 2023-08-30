@@ -7,6 +7,7 @@ using Epic.OnlineServices.Auth;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.Platform;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unisave.EpicAuthentication
 {
@@ -20,13 +21,18 @@ namespace Unisave.EpicAuthentication
     /// </summary>
     public class BasicEOSSDKComponent : MonoBehaviour
     {
+        [Header("Informative Metadata")]
         public string productName = "MyUnityApplication";
         public string productVersion = "1.0";
+        public bool useProjectSettingsForNameAndVersion = false;
+        
+        [Header("Platform Interface Initialization")]
         public string productId = "";
         public string sandboxId = "";
         public string deploymentId = "";
         public string clientId = "";
         public string clientSecret = "";
+        public bool initializeOnStartNotAwake = false;
 
         /// <summary>
         /// Publicly accessible instance of this component 
@@ -37,11 +43,16 @@ namespace Unisave.EpicAuthentication
         {
             Instance = this;
             LoadNativeSDK();
-            InitializePlatformInterface();
+            
+            if (!initializeOnStartNotAwake)
+                InitializePlatformInterface();
         }
 
         private void Start()
         {
+            if (initializeOnStartNotAwake)
+                InitializePlatformInterface();
+            
             DontDestroyOnLoad(this.gameObject);
         }
 
@@ -106,6 +117,7 @@ namespace Unisave.EpicAuthentication
         
         #region "PlatformInterface management"
 
+        [Header("EOS SDK Logging")]
         public LogCategory logCategory = LogCategory.AllCategories;
         public LogLevel logLevel = LogLevel.Warning;
         
@@ -115,9 +127,18 @@ namespace Unisave.EpicAuthentication
 
         void InitializePlatformInterface()
         {
+            string name = productName;
+            string version = productVersion;
+
+            if (useProjectSettingsForNameAndVersion)
+            {
+                name = Application.productName;
+                version = Application.version;
+            }
+            
             var initializeOptions = new InitializeOptions {
-                ProductName = productName,
-                ProductVersion = productVersion
+                ProductName = name,
+                ProductVersion = version
             };
 
             var initializeResult = PlatformInterface.Initialize(ref initializeOptions);
@@ -195,6 +216,7 @@ namespace Unisave.EpicAuthentication
         /// Scope flags need to exactly match those that you have defined
         /// in the Developer Portal
         /// </summary>
+        [Header("Application Account Services Permissions")]
         public AuthScopeFlags[] scopeFlags = new AuthScopeFlags[] {
             AuthScopeFlags.BasicProfile,
             AuthScopeFlags.FriendsList,
@@ -278,13 +300,13 @@ namespace Unisave.EpicAuthentication
             return tcs.Task;
         }
         
-        private bool IsLaunchedViaEpicLauncher()
+        public bool IsLaunchedViaEpicLauncher()
         {
             string[] args = Environment.GetCommandLineArgs();
             return args.Contains("-EpicPortal");
         }
         
-        private string GetExchangeCode()
+        public string GetExchangeCode()
         {
             const string prefix = "-AUTH_PASSWORD=";
             string[] args = Environment.GetCommandLineArgs();

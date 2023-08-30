@@ -1260,11 +1260,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   productName: Unisave Integration Testing
   productVersion: 1.0
+  takeNameAndVersionFromProjectSettings: 0
   productId: 74bea1635ff148ae96679a71c97d95d3
   sandboxId: 0eb54cb2a4fc4b30affc88f2d549133b
   deploymentId: 78bcdd76bca84c83a0961abc634d7105
   clientId: xyza7891sCBQVqNMWdQ6312PGP3lzjOk
   clientSecret: z1zZErQEjy4+ujGW9Kq2GJtuFLLpErNApgLi8MhZXDY
+  initializeOnStartNotAwake: 0
   logCategory: 2147483647
   logLevel: 300
   scopeFlags: 01000000020000000400000020000000
