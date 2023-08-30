@@ -1265,10 +1265,9 @@ MonoBehaviour:
   deploymentId: 78bcdd76bca84c83a0961abc634d7105
   clientId: xyza7891sCBQVqNMWdQ6312PGP3lzjOk
   clientSecret: z1zZErQEjy4+ujGW9Kq2GJtuFLLpErNApgLi8MhZXDY
+  logCategory: 2147483647
+  logLevel: 300
   scopeFlags: 01000000020000000400000020000000
-  loginCredentialType: 4
-  loginCredentialId: localhost:1234
-  loginCredentialToken: MyCredential
 --- !u!4 &1893925618
 Transform:
   m_ObjectHideFlags: 0
@@ -1320,7 +1319,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 11, y: -32}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 534.3705, y: 433.939}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2012474970
