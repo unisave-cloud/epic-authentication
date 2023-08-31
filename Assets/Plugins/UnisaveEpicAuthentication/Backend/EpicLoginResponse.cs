@@ -1,4 +1,4 @@
-﻿namespace Unisave.EpicAuthentication.Backend
+﻿namespace Unisave.EpicAuthentication
 {
     public class EpicLoginResponse
     {

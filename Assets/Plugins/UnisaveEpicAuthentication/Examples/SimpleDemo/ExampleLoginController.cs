@@ -4,8 +4,6 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.Auth;
 using Epic.OnlineServices.Platform;
 using TMPro;
-using Unisave.EpicAuthentication;
-using Unisave.EpicAuthentication.Backend;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -61,7 +59,7 @@ namespace Unisave.EpicAuthentication.Examples.SimpleDemo
             if (info.ResultCode == Result.Success)
             {
                 guideText.text +=
-                    $"Done. Your EpicAccountId is: {info.LocalUserId}\n";
+                    $"Done. Your EpicAccountId is: {sdkComponent.EpicAccountId}\n";
             }
             else
             {
@@ -70,7 +68,21 @@ namespace Unisave.EpicAuthentication.Examples.SimpleDemo
                 return;
             }
             
-            // TODO: login EOS via Connect interface
+            // login EOS via Connect interface
+            guideText.text += "Logging EOS in via Connect interface...\n";
+            Result connectResult = await sdkComponent.ConnectLoginOrRegister();
+
+            if (connectResult == Result.Success)
+            {
+                guideText.text +=
+                    $"Done. Your ProductUserId is: {sdkComponent.ProductUserId}\n";
+            }
+            else
+            {
+                guideText.text +=
+                    $"ERROR: Auth EOS login failed: {connectResult}\n";
+                return;
+            }
 
             // call the UnisaveEpicAuthentication code
             guideText.text += "Logging into Unisave using the Epic user session...\n";

@@ -1,8 +1,8 @@
 using System;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Auth;
+using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.Platform;
-using Unisave.EpicAuthentication.Backend;
 using UnityEngine;
 using Unisave.Facets;
 
@@ -25,10 +25,12 @@ namespace Unisave.EpicAuthentication
         public static UnisaveOperation<EpicLoginResponse> LoginUnisaveViaEpic(
             this MonoBehaviour caller,
             PlatformInterface platform,
-            EpicAccountId epicAccountId = null
+            EpicAccountId epicAccountId = null,
+            ProductUserId productUserId = null
         )
         {
             AuthInterface auth = platform.GetAuthInterface();
+            ConnectInterface connect = platform.GetConnectInterface();
             
             // === get the epic account ID ===
             
@@ -51,23 +53,59 @@ namespace Unisave.EpicAuthentication
             
             // === get the account's JWT ===
             
-            var options = new CopyIdTokenOptions {
+            var authCopyOptions = new Epic.OnlineServices.Auth.CopyIdTokenOptions {
                 AccountId = epicAccountId
             };
 
-            Result result = auth.CopyIdToken(ref options, out IdToken? idToken);
+            Result authCopyResult = auth.CopyIdToken(
+                ref authCopyOptions,
+                out Epic.OnlineServices.Auth.IdToken? authIdToken
+            );
 
-            if (result != Result.Success || idToken == null)
-                throw new Exception("Copying ID token failed: " + result);
+            if (authCopyResult != Result.Success || authIdToken == null)
+                throw new Exception("Copying Auth ID token failed: " + authCopyResult);
 
-            string authJwt = idToken.Value.JsonWebToken.ToString();
+            string authJwt = authIdToken.Value.JsonWebToken.ToString();
             
-            // TODO: get the Connect interface JWT as well
+            // === get the product user ID ===
+                
+            if (productUserId == null)
+            {
+                int usersCount = connect.GetLoggedInUsersCount();
+
+                if (usersCount == 0)
+                    throw new InvalidOperationException(
+                        "There is no logged in product user."
+                    );
+                
+                if (usersCount != 1)
+                    throw new InvalidOperationException(
+                        "There are too many logged in product users. Specify the PUID explicitly."
+                    );
+                
+                productUserId = connect.GetLoggedInUserByIndex(0);
+            }
+            
+            // === get the product user's JWT ===
+            
+            var connectCopyOptions = new Epic.OnlineServices.Connect.CopyIdTokenOptions {
+                LocalUserId = productUserId
+            };
+            
+            Result connectCopyResult = connect.CopyIdToken(
+                ref connectCopyOptions,
+                out Epic.OnlineServices.Connect.IdToken? copyIdToken
+            );
+            
+            if (connectCopyResult != Result.Success || copyIdToken == null)
+                throw new Exception("Copying Connect ID token failed: " + connectCopyResult);
+            
+            string connectJwt = copyIdToken.Value.JsonWebToken.ToString();
             
             // === send the JWT to unisave for validation and the login ===
 
             return caller.CallFacet(
-                (EpicAuthFacet f) => f.LoginOrRegister(authJwt, null)
+                (EpicAuthFacet f) => f.LoginOrRegister(authJwt, connectJwt)
             );
         }
     }

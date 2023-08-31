@@ -1,5 +1,5 @@
 ﻿using System;
-using Unisave.EpicAuthentication.Backend;
+using Unisave.EpicAuthentication;
 using Unisave.Facades;
 
 namespace Unisave.EpicAuthentication.Examples.SimpleDemo

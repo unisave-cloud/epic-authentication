@@ -8,7 +8,7 @@ using Unisave.Serialization;
 using Unisave.Serialization.Exceptions;
 using UnityEngine;
 
-namespace Unisave.EpicAuthentication.Backend
+namespace Unisave.EpicAuthentication
 {
     public class EpicAuthFacet : Facet
     {

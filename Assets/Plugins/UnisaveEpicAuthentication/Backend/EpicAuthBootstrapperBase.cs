@@ -1,7 +1,7 @@
 ﻿using Unisave.Facades;
 using Unisave.Foundation;
 
-namespace Unisave.EpicAuthentication.Backend
+namespace Unisave.EpicAuthentication
 {
     /// <summary>
     /// Base class for your Epic Auth asset bootstrapper
