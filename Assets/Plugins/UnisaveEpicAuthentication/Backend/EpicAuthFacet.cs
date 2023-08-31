@@ -53,6 +53,14 @@ namespace Unisave.EpicAuthentication
                     epicAccountId: epicAccountId,
                     epicProductUserId: epicProductUserId
                 );
+
+                if (documentId == null)
+                {
+                    throw new NullReferenceException(
+                        $"The {nameof(bootstrapper.RegisterNewPlayer)} method of " +
+                        $"the bootstrapper should not return a null."
+                    );
+                }
             }
             
             // log the player in

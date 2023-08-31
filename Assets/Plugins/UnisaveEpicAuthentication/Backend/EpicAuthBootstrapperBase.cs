@@ -24,6 +24,9 @@ namespace Unisave.EpicAuthentication
             // TODO: HACK: this will be a part of the framework and not needed
             Bootstrapper.AssertRan();
             
+            // TODO: log something human-readable if there is no bootstrapper
+            // e.g.: have you defined it? is it really in your backend folder?
+            
             return Facade.App.Resolve<EpicAuthBootstrapperBase>();
         }
 
