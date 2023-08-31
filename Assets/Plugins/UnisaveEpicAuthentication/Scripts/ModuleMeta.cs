@@ -8,6 +8,6 @@ namespace Unisave.EpicAuthentication
         /// <summary>
         /// Version of the module
         /// </summary>
-        public static readonly string Version = "0.1.0-dev";
+        public static readonly string Version = "0.1.0";
     }
 }
