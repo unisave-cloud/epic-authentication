@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef2675ea11414f439b3a17054ad49dc5, type: 3}
   m_Name: EpicAuthenticationSimpleDemo
   m_EditorClassIdentifier: 
-  uploadBehaviour: always
-  scenesToCheck: []
+  uploadBehaviour: check-scenes
+  scenesToCheck:
+  - {fileID: 102900000, guid: 1b6db8d21df88f64b8c94c27b5e89334, type: 3}

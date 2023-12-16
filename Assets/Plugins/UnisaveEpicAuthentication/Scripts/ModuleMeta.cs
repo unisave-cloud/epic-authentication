@@ -3,7 +3,7 @@ namespace Unisave.EpicAuthentication
     /// <summary>
     /// Contains metadata about the Unisave Epic Authentication module
     /// </summary>
-    public class ModuleMeta
+    public static class ModuleMeta
     {
         /// <summary>
         /// Version of the module
