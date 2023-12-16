@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Text;
+using System.Security.Cryptography;
+using JWT;
+using JWT.Algorithms;
+using JWT.Exceptions;
 using LightJson;
 using Unisave.Facades;
 using Unisave.Facets;
-using Unisave.Serialization;
-using Unisave.Serialization.Exceptions;
+using Unisave.JWT;
 
 namespace Unisave.EpicAuthentication
 {
@@ -29,17 +31,22 @@ namespace Unisave.EpicAuthentication
         /// </param>
         public EpicLoginResponse LoginOrRegister(string authJwt, string connectJwt)
         {
-            // validate tokens
-            ValidateJwt(authJwt);
-            ValidateJwt(connectJwt);
-            
-            // extract IDs out of these tokens
-            string epicAccountId = ExtractIdFromJwt(authJwt, nameof(authJwt));
-            string epicProductUserId = ExtractIdFromJwt(connectJwt, nameof(connectJwt));
+            // validate tokens and get IDs out of these tokens
+            string epicAccountId = ValidateJwtAndExtractId(
+                authJwt,
+                nameof(authJwt),
+                bootstrapper.AuthInterfaceJwksCache
+            );
+            string epicProductUserId = ValidateJwtAndExtractId(
+                connectJwt,
+                nameof(connectJwt),
+                bootstrapper.ConnectInterfaceJwksCache
+            );
 
             if (epicAccountId == null && epicProductUserId == null)
                 throw new ArgumentException(
-                    "Either Epic Account ID or PUID have to be provided, but both are null."
+                    "Either Epic Account ID or PUID have to be provided, " +
+                    "but both are null."
                 );
 
             // find the player document
@@ -59,8 +66,8 @@ namespace Unisave.EpicAuthentication
                 if (documentId == null)
                 {
                     throw new NullReferenceException(
-                        $"The {nameof(bootstrapper.RegisterNewPlayer)} method of " +
-                        $"the bootstrapper should not return a null."
+                        $"The {nameof(bootstrapper.RegisterNewPlayer)} " +
+                        $"method of the bootstrapper should not return a null."
                     );
                 }
             }
@@ -80,59 +87,94 @@ namespace Unisave.EpicAuthentication
             };
         }
 
-        private void ValidateJwt(string jwt)
+        /// <summary>
+        /// Validates the given JWT and extracts the respective ID
+        /// it stores (EpicAccountID or ProductUserID)
+        /// </summary>
+        /// <param name="jwt"></param>
+        /// <param name="jwtName">Name of th JWT token (auth or connect)</param>
+        /// <param name="jwksCache">Auth or Connect JWKS cache</param>
+        private static string ValidateJwtAndExtractId(
+            string jwt,
+            string jwtName,
+            EpicJwksCache jwksCache
+        )
         {
-            if (jwt == null)
-                return;
-
-            // throw exception when invalid
-
-            // TODO: implement token validation
-        }
-
-        private string ExtractIdFromJwt(string jwt, string jwtName)
-        {
+            // the player is not logged in via the given interface
+            // (Auth or Connect)
             if (jwt == null)
                 return null;
-
-            string[] parts = jwt.Split('.');
-
-            if (parts.Length != 3)
-            {
-                Log.Error($"The JWT '{jwtName}' has invalid structure.");
-                return null;
-            }
             
-            string bodyText = parts[1];
+            /*
+             * The validation is based on:
+             * https://dev.epicgames.com/docs/epic-account-services
+             * /auth/auth-interface#validating-id-tokens-on-backend-without-sdk
+             */
             
-            // add padding (JWT omits it, but the parser wants it)
-            if (bodyText.Length % 4 == 3)
-                bodyText += "=";
-            else if (bodyText.Length % 4 == 2)
-                bodyText += "==";
-
-            string bodyTextJson = Encoding.UTF8.GetString(
-                Convert.FromBase64String(bodyText)
+            jwksCache.Prepare();
+            
+            var algorithmFactory = new DelegateAlgorithmFactory(ctx => {
+                if (ctx.Header.Algorithm == "RS256")
+                    return ConstructRS256Algorithm(ctx.Header.KeyId, jwksCache);
+                
+                throw new SignatureVerificationException(
+                    $"Unsupported algorithm {ctx.Header.Algorithm}"
+                );
+            });
+            
+            IJsonSerializer serializer = new LightJsonSerializer();
+            IDateTimeProvider provider = new UtcDateTimeProvider();
+            IJwtValidator validator = new JwtValidator(serializer, provider);
+            IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+            IJwtDecoder decoder = new JwtDecoder(
+                serializer, validator, urlEncoder, algorithmFactory
             );
 
-            JsonObject body;
-            try
-            {
-                body = Serializer.FromJsonString<JsonObject>(bodyTextJson);
-            }
-            catch (SerializedException)
-            {
-                Log.Error($"The JWT '{jwtName}' body is not a valid JSON.");
-                return null;
-            }
+            // decode and verify signature,
+            // throws appropriate exceptions when verification fails
+            JsonObject jwtPayload = decoder.DecodeToObject<JsonObject>(jwt);
 
-            if (!body.ContainsKey("sub"))
+            /*
+             * The step 6. (epic game client ID verification) is not performed.
+             * We assume privileges are granted based on the authenticated
+             * player, not the client used. For server clients, a different
+             * authentication scheme should be used.
+             */
+            
+            if (!jwtPayload.ContainsKey("sub"))
             {
                 Log.Error($"The JWT '{jwtName}' is missing the 'sub' attribute.");
                 return null;
             }
+            
+            return jwtPayload["sub"].AsString;
+        }
 
-            return body["sub"].AsString;
+        private static RS256Algorithm ConstructRS256Algorithm(
+            string keyId,
+            EpicJwksCache jwksCache
+        )
+        {
+            JsonObject key = jwksCache.GetKey(keyId);
+
+            if (key["kty"].AsString != "RSA")
+                throw new SignatureVerificationException(
+                    $"The key with ID '{keyId}' does not " +
+                    $"have the 'RSA' key type."
+                );
+
+            string modulus = key["n"].AsString;
+            string exponent = key["e"].AsString; 
+                    
+            IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+            var parameters = new RSAParameters() {
+                Modulus = urlEncoder.Decode(modulus),
+                Exponent = urlEncoder.Decode(exponent)
+            };
+            
+            var rsa = new RSACryptoServiceProvider();
+            rsa.ImportParameters(parameters);
+            return new RS256Algorithm(rsa);
         }
 
         /// <summary>
