@@ -17,6 +17,7 @@ Setting up development
 - Clone this repository
 - Open in Unity, check Unity version in [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt)
 - Import the [Unisave asset](https://assetstore.unity.com/packages/slug/142705) from the asset store
+- Import Text Mesh Pro `Window > TextMeshPro > Import TMP Essential Resources`
 - Install the [Epic Online Services SDK](https://dev.epicgames.com/en-US/sdk) in the way described in the [documentation](https://unisave.cloud/docs/epic-authentication#installation)
 - Set up Unisave cloud connection so that the examples can be compiled and executed
 
@@ -30,4 +31,4 @@ Deployment checklist
 - Export it as `unisave-epic-authentication-0.0.0.unitypackage`
 - Commit the version change as a `v0.0.0` commit
 - Create new GitHub release for the version and include the `.unitypackage` in it
-- Update the header (version, package link) of the documentation page and release the updated website
+- Update the header (version, package link) of [the documentation page](https://unisave.cloud/docs/epic-authentication) and release the updated website
