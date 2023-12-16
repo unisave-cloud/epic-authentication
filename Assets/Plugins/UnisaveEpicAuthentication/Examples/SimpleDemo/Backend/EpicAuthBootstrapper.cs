@@ -6,7 +6,10 @@ namespace Unisave.EpicAuthentication.Examples.SimpleDemo
 {
     public class EpicAuthBootstrapper : EpicAuthBootstrapperBase
     {
-        public override string FindPlayer(string epicAccountId, string epicProductUserId)
+        public override string FindPlayer(
+            string epicAccountId,
+            string epicProductUserId
+        )
         {
             // find by epic account ID
             if (epicAccountId != null)
@@ -32,7 +35,10 @@ namespace Unisave.EpicAuthentication.Examples.SimpleDemo
             return null;
         }
 
-        public override string RegisterNewPlayer(string epicAccountId, string epicProductUserId)
+        public override string RegisterNewPlayer(
+            string epicAccountId,
+            string epicProductUserId
+        )
         {
             // create the player entity
             var player = new PlayerEntity {

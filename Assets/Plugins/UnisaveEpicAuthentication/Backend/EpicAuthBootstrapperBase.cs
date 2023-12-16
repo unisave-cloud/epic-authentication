@@ -1,5 +1,4 @@
-﻿using Unisave.Facades;
-using Unisave.Foundation;
+﻿using Unisave.Bootstrapping;
 
 namespace Unisave.EpicAuthentication
 {
@@ -10,24 +9,9 @@ namespace Unisave.EpicAuthentication
     {
         public override void Main()
         {
-            // use the bootstrapper itself instead of a config object
-            // (because we don't have much to configure)
-            Facade.App.Instance<EpicAuthBootstrapperBase>(this);
-        }
-
-        /// <summary>
-        /// Call this when you want to use the bootstrapper configuration provided by the user
-        /// </summary>
-        /// <returns></returns>
-        public static EpicAuthBootstrapperBase Resolve()
-        {
-            // TODO: HACK: this will be a part of the framework and not needed
-            Bootstrapper.AssertRan();
-            
-            // TODO: log something human-readable if there is no bootstrapper
-            // e.g.: have you defined it? is it really in your backend folder?
-            
-            return Facade.App.Resolve<EpicAuthBootstrapperBase>();
+            // make this bootstrapper instance be the one
+            // used by the epic auth module
+            Services.RegisterInstance<EpicAuthBootstrapperBase>(this);
         }
 
         /// <summary>
@@ -37,7 +21,10 @@ namespace Unisave.EpicAuthentication
         /// <param name="epicAccountId"></param>
         /// <param name="epicProductUserId"></param>
         /// <returns>ArangoDB document ID of the player</returns>
-        public abstract string FindPlayer(string epicAccountId, string epicProductUserId);
+        public abstract string FindPlayer(
+            string epicAccountId,
+            string epicProductUserId
+        );
         
         /// <summary>
         /// Creates a new player document for the given IDs.
@@ -46,7 +33,10 @@ namespace Unisave.EpicAuthentication
         /// <param name="epicAccountId"></param>
         /// <param name="epicProductUserId"></param>
         /// <returns></returns>
-        public abstract string RegisterNewPlayer(string epicAccountId, string epicProductUserId);
+        public abstract string RegisterNewPlayer(
+            string epicAccountId,
+            string epicProductUserId
+        );
 
         /// <summary>
         /// Called after a successful login

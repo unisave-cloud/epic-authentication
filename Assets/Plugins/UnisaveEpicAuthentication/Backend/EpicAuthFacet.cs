@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Text;
 using LightJson;
-using Unisave.Authentication;
 using Unisave.Facades;
 using Unisave.Facets;
 using Unisave.Serialization;
 using Unisave.Serialization.Exceptions;
-using UnityEngine;
 
 namespace Unisave.EpicAuthentication
 {
     public class EpicAuthFacet : Facet
     {
+        private readonly EpicAuthBootstrapperBase bootstrapper;
+        
+        public EpicAuthFacet(EpicAuthBootstrapperBase bootstrapper)
+        {
+            this.bootstrapper = bootstrapper;
+        }
+        
         /// <summary>
         /// Performs player login via Epic credentials,
         /// or registration if the player is not in the database
@@ -24,9 +29,6 @@ namespace Unisave.EpicAuthentication
         /// </param>
         public EpicLoginResponse LoginOrRegister(string authJwt, string connectJwt)
         {
-            // resolve the bootstrapper (a cheap config instance)
-            var bootstrapper = EpicAuthBootstrapperBase.Resolve();
-            
             // validate tokens
             ValidateJwt(authJwt);
             ValidateJwt(connectJwt);
@@ -64,8 +66,7 @@ namespace Unisave.EpicAuthentication
             }
             
             // log the player in
-            // Auth.Login(documentId); // TODO: extend the Auth API
-            Session.Set(AuthenticationManager.SessionKey, documentId); // hack workaround
+            Auth.Login(documentId);
             
             // fire the after-login callback
             bootstrapper.PlayerHasLoggedIn(
